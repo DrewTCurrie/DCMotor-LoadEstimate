@@ -61,7 +61,7 @@ function px = g(x, t, gamma)
     px(1) = x(1)*(-B/J)+x(2)*(K/J);
     px(2) = x(1)*(-K/J)+x(2)*(-R/L)+x(3)*L;
     %Constant input voltage
-    px(3) = x(3);
+    px(3) = px(3);
     %As derived from the state space model,
     % y = theta_dot -> y is speed control
 endfunction;
@@ -71,9 +71,10 @@ t = linspace(0,3, 1000);
 x0 = zeros(1,3);
 %Set an input voltage to make the system do something
 %This is the same as a step input at t=0
-x0(3) = 1;
+x0(3) = 5;
 %MIT Rule gamma
 gamma = 0.01;
 x = lsode(@(x,t) g(x,t,gamma), x0, t);
-
+figure()
+plot(t,x(:,1))
 pause(0.25);
