@@ -44,7 +44,7 @@ function px = g(x, t, gamma)
     R = 1;     %Ohm
 
     J = 0.01;  %kg/m^2
-    B = 0.1    %Ns/m
+    B = 0.1;    %Ns/m
     Ke = 0.01; %V/rad/sec
     Kt = 0.01; %Nm/Amp
     K = Ke;    %Since kt = Ke only need one variable
@@ -77,4 +77,12 @@ gamma = 0.01;
 x = lsode(@(x,t) g(x,t,gamma), x0, t);
 figure()
 plot(t,x(:,1))
+title("Open Loop Step Response");
+ylabel("theta_dot rads/sec");
+xlabel('Time (Seconds)')
+
+
+
+
+
 pause(0.25);
