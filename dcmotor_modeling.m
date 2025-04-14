@@ -14,7 +14,6 @@ clear; close all; clc;
 %Load required packages
 pkg load control;
 
-
 %% Motor Constants
 L = 0.5;   %H
 R = 1;     %Ohm
@@ -70,9 +69,23 @@ enable = 1;     %Enable the MRAS system
 x = lsode(@(x,t) dcmotor_speedcontrol(x, t, enable, gamma, motor, model), x0, t);
 %Plot results of MRAS 
 plot(t,x(:,3), t, x(:,6))
+hold off;
 title("MRAS System Step Response");
 legend("open-loop","y", "ym");
 ylabel("theta_dot rads/sec");
+xlabel('Time (Seconds)')
+
+%% Simulation of positional control
+enable = 0;
+%Move to 360 degrees 
+x0(1) = 360;
+x = lsode(@(x,t) dcmotor_positioncontrol(x, t, enable, gamma, motor, model), x0, t);
+
+figure()
+plot(t,x(:,3))
+%hold on;
+title("Open Loop Response, target = 2pi rads");
+ylabel("theta radians");
 xlabel('Time (Seconds)')
 
 
