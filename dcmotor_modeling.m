@@ -10,25 +10,25 @@
 %and calls the various functions on that object 
 %to run the simulation
 
-
 clear; close all; clc;
 %Load required packages
 pkg load control;
 
 
-% Motor Constants
-
+%% Motor Constants
 L = 0.5;   %H
 R = 1;     %Ohm
 
 J = 0.01;  %kg/m^2
-B = 0.1    %Ns/m
+b = 0.1    %Ns/m
 Ke = 0.01; %V/rad/sec
 Kt = 0.01; %Nm/Amp
 K = Ke;    %Since kt = Ke only need one variable
 
-% Motor Equations
-A = [-B/J,K/J; -K/L, -R/L];
+
+
+%% Motor Equations
+A = [-b/J,K/J; -K/L, -R/L];
 B = [0; 1/L];
 % x = [x1;x2]
 %x1 = theta_dot x2 = i
@@ -37,33 +37,38 @@ C = [1 0];
 %y = C*x
 %Step motor just for reference comapred to lsode solution
 motor = ss(A,B,C,0);
-%step(motor)
+%% Model reference system
 %Implement Model Reference Adapative System for Inertia
-
-
-
-
-%Simulation
+J0 = 0.01;      %Set desired inertia behavior
+A0 = [-b/J0,K/J0; -K/L,-R/L;];
+model = ss(A0, B, C, 0);
+%% Simulation
+%Set t and initial conditions
 t = linspace(0,300, 10000);
-x0 = zeros(1,7);
-%Set an input voltage to make the system do something
-%This is the same as a step input at t=0
-%MIT Rule gamma
-gamma = 1;
+x0 = zeros(1,6);
+
+%Simulation parameters
+x0(1) = 5;      %Set terminal voltage 
+gamma = 1;      %Set adapatation gain
+enable = 0;     %Disable the MRAS system
 
 %% Simulation open loop motor
-x = lsode(@(x,t) g(x,t,gamma, 0), x0, t);
+x = lsode(@(x,t) dcmotor_speedcontrol(x, t, enable, gamma, motor, model), x0, t);
 %Plot results of open loop operation
 figure()
-plot(t,x(:,4))
+plot(t,x(:,2))
 hold on;
 title("Open Loop Step Response");
 ylabel("theta_dot rads/sec");
 xlabel('Time (Seconds)')
+
+%Simulation parameters
+enable = 1;     %Enable the MRAS system 
+
 %%  Simulation MRAS motor
-x = lsode(@(x,t) g(x,t,gamma, 1), x0, t);
+x = lsode(@(x,t) dcmotor_speedcontrol(x, t, enable, gamma, motor, model), x0, t);
 %Plot results of MRAS 
-plot(t,x(:,1), t, x(:,4))
+plot(t,x(:,2), t, x(:,4))
 title("MRAS System Step Response");
 legend("open-loop","y", "ym");
 ylabel("theta_dot rads/sec");
