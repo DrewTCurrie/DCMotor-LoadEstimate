@@ -88,6 +88,3 @@ title("Open Loop Response, target = 2pi rads");
 ylabel("theta radians");
 xlabel('Time (Seconds)')
 
-
-
-pause(0.25);
