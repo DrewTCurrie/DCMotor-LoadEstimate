@@ -1,5 +1,5 @@
 % Octave
-% Created April 10th 2025
+% Created April 14th 2025
 % Author: Drew Currie
 % Created as the final project for MSU EELE-592
 % This project will work to model the current load
@@ -11,10 +11,10 @@
 % Call this function using an ODE solver such as lsode
 %
 % x(1) = input voltage  -> Terminal Voltage
-% x(2) = theta          -> Motor Position (Unused)
+% x(2) = theta          -> Motor Position (Output)
 % X(3) = theta_dot      -> Rotational speed
 % x(4) = current        -> Winding current
-% x(5) = theta_MRAS     -> MRAS Position (Unused)
+% x(5) = theta_MRAS     -> MRAS Position (Output)
 % x(6) = Theta_dot_MRAS -> MRAS rotational speed
 % x(7) = Current_MRAS   -> MRAS Widing Current
 % x(8) = d(theta)/dt    -> Control update signal
@@ -41,10 +41,11 @@ function px = dcmotor_positioncontrol(x, t, enable, gamma, motor, model)
     % Just run the system in an open loop configuration
     if(enable == 0)
         %State 1, theta_dot
+        px(2) = x(3);
         px(3) = x(3)*motor.a(2,2)+x(4)*motor.a(2,3);
         px(4) = x(3)*motor.a(3,2)+x(4)*motor.a(3,3)+motor.b(3)*uc;
         %As derived from the state space model,
-        % y = theta_dot -> y is speed control
+        % y = theta -> y is position 
     endif
     
     % If enable is 1 run the MRAS 
@@ -53,6 +54,7 @@ function px = dcmotor_positioncontrol(x, t, enable, gamma, motor, model)
     if(enable == 1)
         %Use estimated inertia, J0
         %MRAS States
+        px(5) = x(6);
         px(6) = x(6)*model.a(2,2)+x(7)*model.a(2,3);
         px(7) = x(6)*model.a(3,2)+x(7)*model.a(3,3)+model.b(3)*uc;
 
@@ -61,15 +63,16 @@ function px = dcmotor_positioncontrol(x, t, enable, gamma, motor, model)
         u = x(8)*uc;
         %Now implement plant with the modified 
         %control signal
+        px(2) = x(3);
         px(3) = x(3)*motor.a(2,2)+x(4)*motor.a(2,3);
         px(4) = x(3)*motor.a(3,2)+x(4)*motor.a(3,3)+motor.b(3)*u;
     
         %Update MIT Rule
         % e = y - ym 
-        e = x(3) - x(6);
+        e = x(2) - x(5);
         
         %Update input for next loop
-        %In this case ym is a roational speed
-        px(8) = -gamma*e*x(6);
+        %In this case ym is a position
+        px(8) = -gamma*e*x(5);
     endif
 endfunction;
