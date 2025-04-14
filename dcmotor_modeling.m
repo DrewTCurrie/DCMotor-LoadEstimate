@@ -18,13 +18,11 @@ pkg load control;
 L = 0.5;   %H
 R = 1;     %Ohm
 
-J = 0.01;  %kg/m^2
-b = 0.1    %Ns/m
+J = 0.1;  %kg/m^2
+b = 0.1;    %Ns/m
 Ke = 0.01; %V/rad/sec
 Kt = 0.01; %Nm/Amp
 K = Ke;    %Since kt = Ke only need one variable
-
-
 
 %% Motor Equations
 A = [0,1,0; 0,-b/J,K/J; 0,-K/L, -R/L];
@@ -33,7 +31,7 @@ B = [0; 0; 1/L];
 %x1 = theta_dot x2 = i
 %d/dt(x) = Ax+Bv
 %Set C matrix for speed output
-C = [0 1 0];
+C = [1 0 0];
 %y = C*x
 %Step motor just for reference comapred to lsode solution
 motor = ss(A,B,C,0);
@@ -44,7 +42,7 @@ A0 = [0, 1, 0; 0,-b/J0,K/J0; 0,-K/L,-R/L;];
 model = ss(A0, B, C, 0);
 %% Simulation
 %Set t and initial conditions
-t = linspace(0,300, 10000);
+t = linspace(0,50, 1000);
 x0 = zeros(1,8);
 
 %Simulation parameters
@@ -76,15 +74,28 @@ ylabel("theta_dot rads/sec");
 xlabel('Time (Seconds)')
 
 %% Simulation of positional control
+x0(1) = 1;      %Set terminal voltage 
 enable = 0;
 %Move to 360 degrees 
-x0(1) = 360;
+x0(1) = 2*pi;
 x = lsode(@(x,t) dcmotor_positioncontrol(x, t, enable, gamma, motor, model), x0, t);
 
 figure()
-plot(t,x(:,3))
+plot(t,x(:,2))
 %hold on;
 title("Open Loop Response, target = 2pi rads");
 ylabel("theta radians");
 xlabel('Time (Seconds)')
 
+%Update simulation parameters
+x0(1) = 1;      %Set terminal voltage 
+gamma = 5;      %Set adapatation gain
+enable = 1;     %Disable the MRAS system
+x = lsode(@(x,t) dcmotor_positioncontrol(x, t, enable, gamma, motor, model), x0, t);
+
+figure()
+plot(t,x(:,2), t, x(:,5))
+title("Open Loop Response, target = 2pi rads");
+ylabel("theta radians");
+xlabel('Time (Seconds)');
+legend("y", "ym");
