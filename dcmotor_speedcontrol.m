@@ -5,10 +5,10 @@
 % This project will work to model the current load
 % on a DC motor through the change in the moment of 
 % inertia. This system works to provide a 
-%Model Reference Adpative Control for speed control 
-%of the DC motor. 
+% Model Reference Adpative Control for speed control 
+% of the DC motor. 
 %
-%Call this function using an ODE solver such as lsode
+% Call this function using an ODE solver such as lsode
 %
 % x(1) = input voltage  -> Terminal Voltage
 % x(2) = theta          -> Motor Position (Unused)
@@ -19,18 +19,18 @@
 % x(7) = Current_MRAS   -> MRAS Widing Current
 % x(8) = d(theta)/dt    -> Control update signal
 %
-%Motor is expected to be a state space sys model
-%The system works off a modle for a DC motor with 
-%position as a state. 
-%
-%The A matrix is expected to be 3x3
-%The B matrix is expected to be 1x3
-%The C matrix is expected to be 3x1
-%Model is expected to be a state space sys model
-%The A matrix is expected to be 3x3 
-%The A matrix should contain the desired behavior
-%The B matrix is expected to be 1x3
-%The C matrix is expected to be 3x1
+% Motor is expected to be a state space sys model
+% The system works off a modle for a DC motor with 
+% position as a state. 
+% 
+% The A matrix is expected to be 3x3
+% The B matrix is expected to be 1x3
+% The C matrix is expected to be 3x1
+% Model is expected to be a state space sys model
+% The A matrix is expected to be 3x3 
+% The A matrix should contain the desired behavior
+% The B matrix is expected to be 1x3
+% The C matrix is expected to be 3x1
 
 function px = dcmotor_speedcontrol(x, t, enable, gamma, motor, model)
 
