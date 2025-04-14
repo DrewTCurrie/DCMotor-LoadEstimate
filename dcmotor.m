@@ -35,14 +35,14 @@ motor = ss(A,B,C,0);
 %Implement Model Reference Adapative System for Inertia
 
 function px = g(x, t, gamma, enable)
-    J0 = 0.005; %Reference model gain
+    J0 = 0.01; %Reference model gain
                 %What the MRAS starts with as an estimate
 
     % Motor Constants
     L = 0.5;   %H
     R = 1;     %Ohm
     %J is the actual inertia of the motor 
-    J = 0.01;  %kg/m^2
+    J = 1.0;  %kg/m^2
     B = 0.1;    %Ns/m
     Ke = 0.01; %V/rad/sec
     Kt = 0.01; %Nm/Amp
@@ -92,6 +92,7 @@ function px = g(x, t, gamma, enable)
         %Update MIT Rule
         % e = y - ym 
         e = x(1) - x(4);
+        
         %Update input for next loop
         %In this case ym is a roational speed
         px(6) = -gamma*e*x(4);
@@ -99,28 +100,28 @@ function px = g(x, t, gamma, enable)
 endfunction;
 
 %Simulation
-t = linspace(0,120, 10000);
+t = linspace(0,300, 10000);
 x0 = zeros(1,7);
 %Set an input voltage to make the system do something
 %This is the same as a step input at t=0
 %MIT Rule gamma
-gamma = 5;
+gamma = 1;
 
 %% Simulation open loop motor
 x = lsode(@(x,t) g(x,t,gamma, 0), x0, t);
 %Plot results of open loop operation
 figure()
 plot(t,x(:,4))
+hold on;
 title("Open Loop Step Response");
 ylabel("theta_dot rads/sec");
 xlabel('Time (Seconds)')
 %%  Simulation MRAS motor
 x = lsode(@(x,t) g(x,t,gamma, 1), x0, t);
 %Plot results of MRAS 
-figure()
 plot(t,x(:,1), t, x(:,4))
 title("MRAS System Step Response");
-legend("y", "ym");
+legend("open-loop","y", "ym");
 ylabel("theta_dot rads/sec");
 xlabel('Time (Seconds)')
 
