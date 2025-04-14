@@ -5,7 +5,7 @@
 % This project will work to model the current load
 % on a DC motor through the change in the moment of 
 % inertia. 
-
+%
 %This file creates all the dc motor objects
 %and calls the various functions on that object 
 %to run the simulation
