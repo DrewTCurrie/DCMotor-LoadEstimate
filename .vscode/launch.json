@@ -10,7 +10,7 @@
             "request": "launch",
             "name": "Execute selected file.",
             "program": "${file}",
-            "octave": "octave-cli",
+            "octave": "octave",
             "sourceFolder": "${workspaceFolder}",
             "autoTerminate": false
         }

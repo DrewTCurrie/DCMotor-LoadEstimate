@@ -1,0 +1,31 @@
+    %Run in closed loop if enable is 2
+    if (enable == 2)
+        %Create controller statespace equations
+        Ac = [0,0,1; 1,0,0; 0,1,0];
+        Bc = [1, 0, 0];
+        Cc = [0,1,0];
+        %Observer gains
+        B1 = 0.09;
+        B2 = 0.6;
+        b = 0.0001;
+        L0 = [B1, B2, 1]'/b0;
+        %Augmented A control matrix
+        Ae = Ac-L0*Cc;
+
+        %Solving controller and plant
+        r = x(1) - x(2);
+        
+        %Controller output vector
+        pcx(1) = x(1);
+        pcx(2) = pid(2)*(1-pcx(4))+pid(3)*(1-pcx(2))+pid(1)*(1-pcx(3))+B1*pcx(3)+B1*pcx(5);
+        pcx(3) = B2*pcx(3)+B2*pcx(5);
+        px(4) = x(3)+x(5);
+        
+
+
+        px(5) = x(6);
+        px(6) = x(6)*model.a(2,2)+x(7)*model.a(2,3);
+        px(7) = x(6)*model.a(3,2)+x(7)*model.a(3,3)+model.b(3)*uc;
+
+      
+    endif

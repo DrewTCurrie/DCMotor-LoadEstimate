@@ -18,7 +18,7 @@
 % x(6) = Theta_dot_MRAS -> MRAS rotational speed
 % x(7) = Current_MRAS   -> MRAS Widing Current
 % x(8) = d(theta)/dt    -> Control update signal
-%
+% x(9) = Adapatation gain -> u/uc
 % Motor is expected to be a state space sys model
 % The system works off a modle for a DC motor with 
 % position as a state. 
@@ -37,7 +37,7 @@ function px = dcmotor_speedcontrol(x, t, enable, gamma, motor, model)
     %System input, terminal voltage for the motor
     uc = x(1);
     %Output vector
-    px = zeros(1,8);
+    px = zeros(1,9);
     % If enable is 0 do not run the MRAS
     % Just run the system in an open loop configuration
     if(enable == 0)
@@ -72,5 +72,6 @@ function px = dcmotor_speedcontrol(x, t, enable, gamma, motor, model)
         %Update input for next loop
         %In this case ym is a roational speed
         px(8) = -gamma*e*x(6);
+        px(9) = u/uc;
     endif
 endfunction;

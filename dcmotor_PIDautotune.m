@@ -31,8 +31,8 @@ function pid = dcmotor_PIDautotune(motor)
     pkg load signal;
 
     [y, tOut] = step(motor);
-    figure()
-    plot(y, tOut);
+    %figure()
+    %plot(y, tOut);
 
     %%Auto-tune the PID controller for the motor position
     k = max(y);
@@ -52,5 +52,5 @@ function pid = dcmotor_PIDautotune(motor)
     P = 1.2/alpha;
     I = 2*L;
     D = L/2;
-    pid = [P, I, D];
+    pid = [P, P/I, P*D];
 endfunction;
