@@ -78,7 +78,7 @@ x0(1) = 1;      %Set terminal voltage
 enable = 0;
 %Move to 360 degrees 
 x0(1) = 2*pi;
-x = lsode(@(x,t) dcmotor_positioncontrol(x, t, enable, gamma, motor, model), x0, t);
+x = lsode(@(x,t) dcmotor_positioncontrol(x, t, enable, gamma, motor, model, 0), x0, t);
 
 figure()
 plot(t,x(:,2))
@@ -91,7 +91,7 @@ xlabel('Time (Seconds)')
 x0(1) = 1;      %Set terminal voltage 
 gamma = 5;      %Set adapatation gain
 enable = 1;     %Disable the MRAS system
-x = lsode(@(x,t) dcmotor_positioncontrol(x, t, enable, gamma, motor, model), x0, t);
+x = lsode(@(x,t) dcmotor_positioncontrol(x, t, enable, gamma, motor, model, 0), x0, t);
 
 figure()
 plot(t,x(:,2), t, x(:,5))
@@ -99,3 +99,7 @@ title("Open Loop Response, target = 2pi rads");
 ylabel("theta radians");
 xlabel('Time (Seconds)');
 legend("y", "ym");
+
+%Get PID parameters
+pid_values = dcmotor_PIDautotune(motor)
+x = lsode(@(x,t) dcmotor_positioncontrol(x, t, enable, gamma, motor, model, pid_values), x0, t);

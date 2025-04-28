@@ -32,7 +32,7 @@
 % The B matrix is expected to be 1x3
 % The C matrix is expected to be 3x1
 
-function px = dcmotor_positioncontrol(x, t, enable, gamma, motor, model)
+function px = dcmotor_positioncontrol(x, t, enable, gamma, motor, model, pid)
     %System input, terminal voltage for the motor
     uc = x(1);
     %Output vector
@@ -74,5 +74,9 @@ function px = dcmotor_positioncontrol(x, t, enable, gamma, motor, model)
         %Update input for next loop
         %In this case ym is a position
         px(8) = -gamma*e*x(5);
+    endif
+    %Run in closed loop if enable is 2
+    if (enable == 2)
+    
     endif
 endfunction;
