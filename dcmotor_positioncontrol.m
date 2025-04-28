@@ -77,6 +77,27 @@ function px = dcmotor_positioncontrol(x, t, enable, gamma, motor, model, pid)
     endif
     %Run in closed loop if enable is 2
     if (enable == 2)
-    
+        %Create controller statespace equations
+        Ac = [0,0,01; 1,0,0; 0,1,0];
+        Bc = [1, 0, 0];
+        Cc = [0,1,0];
+        %Observer gains
+        B1 = 0.09;
+        B2 = 0.6;
+        b = 0.0001;
+        L0 = [B1, B2, 1]'/b0;
+        %Augmented A control matrix
+        Ae = Ac-L0*Cc;
+
+        %Run the system without MRAS with PID controller
+        x_controller = zeros(1,6);
+        x_controller(1) = uc;
+        x_controller(5) = x(2);
+        PID = [1, 0, 0];
+        x_controller = sspid(x_controller, t, PID);
+        %State 1, theta
+        px(2) = x(3);
+        px(3) = x(3)*motor.a(2,2)+x(4)*motor.a(2,3);
+        px(4) = x(3)*motor.a(3,2)+x(4)*motor.a(3,3)+motor.b(3)*x_controller(6);
     endif
 endfunction;
